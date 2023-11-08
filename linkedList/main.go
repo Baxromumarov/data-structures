@@ -1,115 +1,110 @@
+// Implementation
 package main
 
-import (
-	"fmt"
-)
+import "fmt"
 
-type node struct {
-	data int
-	next *node
+// Singly linked lists
+// Doubly linked lists
+// Circular linked lists
+// Circular doubly linked lists
+type SinglyLinkedList struct {
+	Value int
+	Next  *SinglyLinkedList
 }
 
-type linkedList struct {
-	length int
-	head   *node
-	tail   *node
-}
+func (s *SinglyLinkedList) InsertAtEnd(val int) {
+	newNode := &SinglyLinkedList{Value: val, Next: nil}
 
-func (l *linkedList) Len() int {
-	return l.length
-}
-
-func (l *linkedList) PushBack(n *node) {
-	if l.head == nil {
-		l.head = n
-		l.tail = n
-		l.length++
+	if s.Next == nil {
+		s.Next = newNode
 	} else {
-		l.tail.next = n
-		l.tail = n
-		l.length++
+		s.Next.InsertAtEnd(val)
 	}
 }
 
-func (l linkedList) Display() {
-	for l.head != nil {
-		fmt.Printf("%v -> ", l.head.data)
-		l.head = l.head.next
+func (s *SinglyLinkedList) Print() {
+	current := s
+	for current != nil {
+		fmt.Printf("%d -> ", current.Value)
+		current = current.Next
 	}
-	fmt.Println()
+	fmt.Println("nil")
 }
 
-func (l linkedList) Front() (int, error) {
-	if l.head == nil {
-		return 0, fmt.Errorf("Cannot Find Front Value in an Empty linked list")
+func (s *SinglyLinkedList) Len() int {
+	length := 0
+
+	for head := s; head != nil; head = head.Next {
+		length++
 	}
-	return l.head.data, nil
+	return length
 }
 
-func (l linkedList) Back() (int, error) {
-	if l.head == nil {
-		return 0, fmt.Errorf("Cannot Find Front Value in an Empty linked list")
-	}
-	return l.tail.data, nil
-}
-
-func (l *linkedList) Reverse() {
-	curr := l.head
-	l.tail = l.head
-	var prev *node
-	for curr != nil {
-		temp := curr.next
-		curr.next = prev
-		prev = curr
-		curr = temp
-	}
-	l.head = prev
-}
-
-func (l *linkedList) Delete(key int) {
-
-	if l.head.data == key {
-		l.head = l.head.next
-		l.length--
+func (s *SinglyLinkedList) InsertInNIndex(index, value int) {
+	if index < 0 {
+		// Invalid index, do nothing
 		return
 	}
-	var prev *node = nil
-	curr := l.head
-	for curr != nil && curr.data != key {
-		prev = curr
-		curr = curr.next
-	}
-	if curr == nil {
-		fmt.Println("Key Not found")
+
+	newNode := &SinglyLinkedList{Value: value, Next: nil}
+
+	if index == 0 {
+		// Insert at the beginning
+		newNode.Next = s
+		*s = *newNode
 		return
 	}
-	prev.next = curr.next
-	l.length--
-	fmt.Println("Node Deleted")
+
+	current := s
+	for i := 0; i < index-1 && current != nil; i++ {
+		current = current.Next
+	}
+
+	if current == nil {
+		// Index is out of bounds, do nothing
+		return
+	}
+
+	newNode.Next = current.Next
+	current.Next = newNode
+}
+
+func (s *SinglyLinkedList) DeleteFromNIndex(index int) {
+	if index < 0 || s == nil {
+		// Invalid index or empty list, do nothing
+		return
+	}
+
+	if index == 0 {
+		// Delete the first node
+		*s = *s.Next
+		return
+	}
+
+	current := s
+	for i := 0; i < index-1 && current.Next != nil; i++ {
+		current = current.Next
+	}
+
+	if current.Next == nil {
+		// Index is out of bounds, do nothing
+		return
+	}
+
+	current.Next = current.Next.Next
 
 }
 
 func main() {
-	list := linkedList{}
-	node1 := &node{data: 20}
-	node2 := &node{data: 30}
-	node3 := &node{data: 40}
-	node4 := &node{data: 50}
-	node5 := &node{data: 70}
-	list.PushBack(node1)
-	list.PushBack(node2)
-	list.PushBack(node3)
-	list.PushBack(node4)
-	list.PushBack(node5)
-	fmt.Println("Length = ", list.Len())
-	list.Display()
-	list.Delete(40)
-	list.Reverse()
-	fmt.Println("Length = ", list.Len())
-	list.Display()
-	front, _ := list.Front()
-	back, _ := list.Back()
-	fmt.Println("Front = ", front)
-	fmt.Println("Back = ", back)
+	// Create the head node
+	linkedList := &SinglyLinkedList{Value: 1}
+	linkedList.InsertAtEnd(2)
+	linkedList.InsertAtEnd(3)
+	linkedList.InsertAtEnd(4)
+	linkedList.InsertAtEnd(5)
+	linkedList.InsertInNIndex(2, -19)
+	fmt.Println("N: ", linkedList.Len())
+	linkedList.DeleteFromNIndex(3)
+	linkedList.Print()
 
 }
