@@ -1,11 +1,21 @@
 // Implementation of the Stack
 package main
 
-import "fmt"
+import (
+	"errors"
+	"fmt"
+)
 
 type Stack struct {
 	Item   []interface{}
 	Length int
+}
+
+func (s *Stack) Peek() (interface{}, error) {
+	if s.IsEmpty() {
+		return 0, errors.New("Stack is empty")
+	}
+	return s.Item[s.Length-1], nil
 }
 
 func (s *Stack) Len() int {
