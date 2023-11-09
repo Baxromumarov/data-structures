@@ -1,86 +1,57 @@
 package main
 
-import (
-	"fmt"
-	"sync"
-)
+import "fmt"
 
-type Item interface{}
+// linear data structure
+// =<-dequeue [=======================] back/tail/rear =<- enqueue
 
 type Queue struct {
-	items []Item
-	mutex sync.Mutex
+	data []interface{}
 }
 
-func (queue *Queue) Peek() Item {
-	queue.mutex.Lock()
-	defer queue.mutex.Unlock()
+func (q *Queue) Len() int {
+	return len(q.data)
 
-	if len(queue.items) == 0 {
-		return nil
+}
+
+func (q *Queue) Enqueue(val interface{}) {
+	q.data = append(q.data, val)
+}
+
+func (q *Queue) Dequeue() interface{} {
+	if len(q.data) == 0 {
+		return nil // Queue is empty
 	}
+	item := q.data[0]
+	q.data = q.data[1:]
+	return item
 
-	return queue.items[len(queue.items)-1]
-}
-func (queue *Queue) Dump() []Item {
-	queue.mutex.Lock()
-	defer queue.mutex.Unlock()
-
-	var copiedqueue = make([]Item, len(queue.items))
-	copy(copiedqueue, queue.items)
-
-	return copiedqueue
-}
-func (queue *Queue) IsEmpty() bool {
-	queue.mutex.Lock()
-	defer queue.mutex.Unlock()
-
-	return len(queue.items) == 0
-}
-func (queue *Queue) Reset() {
-	queue.mutex.Lock()
-	defer queue.mutex.Unlock()
-
-	queue.items = nil
-}
-func (queue *Queue) Enqueue(item Item) {
-	queue.mutex.Lock()
-	defer queue.mutex.Unlock()
-
-	queue.items = append(queue.items, item)
 }
 
-func (queue *Queue) Dequeue() Item {
-	queue.mutex.Lock()
-	defer queue.mutex.Unlock()
-
-	if len(queue.items) == 0 {
-		return nil
+func (q *Queue) Front() interface{} {
+	if len(q.data) == 0 {
+		return nil // Queue is empty
 	}
-
-	lastItem := queue.items[0]
-	queue.items = queue.items[1:]
-
-	return lastItem
+	return q.data[0]
 }
+
+// IsEmpty returns true if the queue is empty.
+func (q *Queue) IsEmpty() bool {
+	return len(q.data) == 0
+}
+
 func main() {
-	var queue Queue
+	var q = Queue{}
+	q.Enqueue(12)
+	q.Enqueue(13)
+	q.Enqueue(14)
+	q.Enqueue(15)
+	q.Enqueue(16)
+	q.Enqueue(17)
+	fmt.Println(">>>>", q)
+	q.Dequeue()
+	q.Dequeue()
+	q.Dequeue()
+	fmt.Println(">>>>", q)
 
-	queue.Enqueue(5)
-	queue.Enqueue(4)
-	queue.Enqueue(3)
-	queue.Enqueue(2)
-	queue.Enqueue(1)
-
-	fmt.Println("Queue:", queue.Dump())
-	fmt.Println("The last item:", queue.Peek())
-
-	queue.Dequeue()
-
-	fmt.Println("Queue:", queue.Dump())
-	fmt.Println("Queue is empty:", queue.IsEmpty())
-
-	queue.Reset()
-
-	fmt.Println("Queue is empty:", queue.IsEmpty())
 }
