@@ -3,10 +3,79 @@ package main
 
 import "fmt"
 
-// Singly linked lists
-// Doubly linked lists
-// Circular linked lists
-// Circular doubly linked lists
+// 1. Singly linked lists
+// 2. Doubly linked lists
+// 3. Circular linked lists
+// 4. Circular doubly linked lists
+// ! Doubly linked lists
+type Node struct {
+	Data int
+	Prev *Node
+	Next *Node
+}
+
+type DoublyLinkedList struct {
+	Head *Node
+}
+
+// Append adds a new node to the end of the doubly linked list
+func (dll *DoublyLinkedList) Append(data int) {
+	newNode := &Node{Data: data, Prev: nil, Next: nil}
+	if dll.Head == nil {
+		dll.Head = newNode
+	} else {
+		current := dll.Head
+		for current.Next != nil {
+			current = current.Next
+		}
+		current.Next = newNode
+		newNode.Prev = current
+	}
+}
+func (dll *DoublyLinkedList) DisplayForward() {
+	current := dll.Head
+	for current != nil {
+		fmt.Printf("%d ", current.Data)
+		current = current.Next
+	}
+	fmt.Println()
+}
+
+// DisplayBackward prints the elements of the doubly linked list in backward direction
+func (dll *DoublyLinkedList) DisplayBackward() {
+	current := dll.Head
+	for current != nil && current.Next != nil {
+		current = current.Next
+	}
+	for current != nil {
+		fmt.Printf("%d ", current.Data)
+		current = current.Prev
+	}
+	fmt.Println()
+}
+func main() {
+	var dll DoublyLinkedList
+
+	// Appending nodes
+	dll.Append(1)
+	dll.Append(2)
+	dll.Append(3)
+	dll.Append(4)
+	dll.Append(5)
+	dll.Append(6)
+	dll.Append(7)
+	dll.Append(8)
+
+	// Displaying in both directions
+	fmt.Print("Forward: ")
+	dll.DisplayForward()
+
+	fmt.Print("Backward: ")
+	dll.DisplayBackward()
+}
+
+//! Singly linked lists
+/*
 type SinglyLinkedList struct {
 	Value int
 	Next  *SinglyLinkedList
@@ -108,3 +177,4 @@ func main() {
 	linkedList.Print()
 
 }
+*/
