@@ -40,7 +40,8 @@ func binarySearch(arr []int, target int) int {
 	high := len(arr) - 1
 
 	for low <= high {
-		mid := low + (high-low)/2
+		mid := (low +high)/2
+		
 
 		if arr[mid] == target {
 			return mid // Element found at index mid

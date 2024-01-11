@@ -1,106 +1,74 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+)
 
-type minheap struct {
-	heapArray []int
-	size      int
-	maxsize   int
-}
+// To heapify a subtree rooted with node i
+// which is an index in arr[].
+// n is size of heap
+func heapify(arr []int, N, i int) {
+	// Initialize largest as root
+	largest := i
 
-func newMinHeap(maxsize int) *minheap {
-	minheap := &minheap{
-		heapArray: []int{},
-		size:      0,
-		maxsize:   maxsize,
+	// left = 2*i + 1
+	l := 2*i + 1
+
+	// right = 2*i + 2
+	r := 2*i + 2
+
+	// If left child is larger than root
+	if l < N && arr[l] > arr[largest] {
+		largest = l
 	}
-	return minheap
-}
 
-func (m *minheap) leaf(index int) bool {
-	if index >= (m.size/2) && index <= m.size {
-		return true
+	// If right child is larger than largest so far
+	if r < N && arr[r] > arr[largest] {
+		largest = r
 	}
-	return false
-}
 
-func (m *minheap) parent(index int) int {
-	return (index - 1) / 2
-}
+	// If largest is not root
+	if largest != i {
+		arr[i], arr[largest] = arr[largest], arr[i]
 
-func (m *minheap) leftchild(index int) int {
-	return 2*index + 1
-}
-
-func (m *minheap) rightchild(index int) int {
-	return 2*index + 2
-}
-
-func (m *minheap) insert(item int) error {
-	if m.size >= m.maxsize {
-		return fmt.Errorf("Heal is ful")
-	}
-	m.heapArray = append(m.heapArray, item)
-	m.size++
-	m.upHeapify(m.size - 1)
-	return nil
-}
-
-func (m *minheap) swap(first, second int) {
-	temp := m.heapArray[first]
-	m.heapArray[first] = m.heapArray[second]
-	m.heapArray[second] = temp
-}
-
-func (m *minheap) upHeapify(index int) {
-	for m.heapArray[index] < m.heapArray[m.parent(index)] {
-		m.swap(index, m.parent(index))
+		// Recursively heapify the affected sub-tree
+		heapify(arr, N, largest)
 	}
 }
 
-func (m *minheap) downHeapify(current int) {
-	if m.leaf(current) {
-		return
+// Main function to do heap sort
+func heapSort(arr []int, N int) {
+	// Build heap (rearrange array)
+	for i := N/2 - 1; i >= 0; i-- {
+		heapify(arr, N, i)
 	}
-	smallest := current
-	leftChildIndex := m.leftchild(current)
-	rightRightIndex := m.rightchild(current)
 
-	if leftChildIndex < m.size && m.heapArray[leftChildIndex] < m.heapArray[smallest] {
-		smallest = leftChildIndex
-	}
-	if rightRightIndex < m.size && m.heapArray[rightRightIndex] < m.heapArray[smallest] {
-		smallest = rightRightIndex
-	}
-	if smallest != current {
-		m.swap(current, smallest)
-		m.downHeapify(smallest)
-	}
-	return
-}
-func (m *minheap) buildMinHeap() {
-	for index := ((m.size / 2) - 1); index >= 0; index-- {
-		m.downHeapify(index)
+	// One by one extract an element from heap
+	for i := N - 1; i > 0; i-- {
+		// Move current root to end
+		arr[0], arr[i] = arr[i], arr[0]
+
+		// call max heapify on the reduced heap
+		heapify(arr, i, 0)
 	}
 }
 
-func (m *minheap) remove() int {
-	top := m.heapArray[0]
-	m.heapArray[0] = m.heapArray[m.size-1]
-	m.heapArray = m.heapArray[:(m.size)-1]
-	m.size--
-	m.downHeapify(0)
-	return top
+// A utility function to print array of size n
+func printArray(arr []int, N int) {
+	for i := 0; i < N; i++ {
+		fmt.Printf("%d ", arr[i])
+	}
+	fmt.Println()
 }
 
+// Driver's code
 func main() {
-	inputArray := []int{6, 5, 3, 7, 2, 8}
-	minHeap := newMinHeap(len(inputArray))
-	for i := 0; i < len(inputArray); i++ {
-		minHeap.insert(inputArray[i])
-	}
-	minHeap.buildMinHeap()
-	for i := 0; i < len(inputArray); i++ {
-		fmt.Println(minHeap.remove())
-	}
+	arr := []int{12, 11, 13, 5, 6, 7, -3, 24, 32, 3, 0}
+	N := len(arr)
+
+	// Function call
+	heapSort(arr, N)
+
+	fmt.Println("Sorted array is")
+	printArray(arr, N)
 }
